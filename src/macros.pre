@@ -1,0 +1,21 @@
+<?php
+
+macro ·recursion {
+    async
+    function
+    ·optional(·ns())·function
+    (···parameters)
+    {···body}
+} >> {
+    function ·function(···parameters) {
+        return call_user_func(function($context) {
+            $generator = function() use ($context) {
+                extract($context);
+
+                ···body
+            };
+
+            return new \Amp\Coroutine($generator());
+        }, get_defined_vars());
+    }
+}
