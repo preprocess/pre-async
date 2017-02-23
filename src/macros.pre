@@ -1,19 +1,19 @@
 <?php
 
 macro ·recursion {
-    async function(···parameters) {···body}
+    async function (···parameters) {···body}
 } >> {
-    call_user_func(function($outer) {
-        return function(···parameters) use ($outer) {
-            $generator = call_user_func(function($inner) use ($outer) {
-                return function() use ($outer, $inner) {
-                    extract($outer);
-                    extract($inner);
-                    ···body
-                };
-            }, get_defined_vars());
-
-            return new \Amp\Coroutine($generator());
+    call_user_func(function ($outer) {
+        return function (···parameters) use ($outer) {
+            return Amp\call(
+                call_user_func(function ($inner) use ($outer) {
+                    return function () use ($outer, $inner) {
+                        extract($outer);
+                        extract($inner);
+                        ···body
+                    };
+                }, get_defined_vars())
+            );
         };
     }, get_defined_vars())
 }
@@ -22,14 +22,12 @@ macro ·recursion {
     async function ·ns()·function (···parameters) {···body}
 } >> {
     function ·function(···parameters) {
-        return call_user_func(function($context) {
-            $generator = function() use ($context) {
+        return call_user_func(function ($context) {
+            return Amp\call(function () use ($context) {
                 extract($context);
 
                 ···body
-            };
-
-            return new \Amp\Coroutine($generator());
+            });
         }, get_defined_vars());
     }
 }
