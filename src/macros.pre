@@ -5,7 +5,7 @@ macro ·recursion {
 } >> {
     call_user_func(function ($outer) {
         return function (···parameters) use ($outer) {
-            return Amp\call(
+            return \Amp\call(
                 call_user_func(function ($inner) use ($outer) {
                     return function () use ($outer, $inner) {
                         extract($outer);
@@ -23,7 +23,7 @@ macro ·recursion {
 } >> {
     function ·function(···parameters) {
         return call_user_func(function ($context) {
-            return Amp\call(function () use ($context) {
+            return \Amp\call(function () use ($context) {
                 extract($context);
 
                 ···body
