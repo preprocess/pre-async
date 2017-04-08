@@ -14,6 +14,14 @@ $async = async function($path) {
     return $content;
 };
 
+$promise = promise {
+  if ($shouldResolve) {
+    $resolve("yay!");
+  } else {
+    $fail("boo hoo!");
+  }
+}
+
 --EXPECT--
 
 function read($path)
@@ -41,4 +49,16 @@ $async = call_user_func(function ($outer·1) {
                 }, get_defined_vars())
             );
     };
+}, get_defined_vars());
+
+$promise = call_user_func(function ($context·2) {
+    return new \Amp\Deferred(function (callable $resolve, callable $fail) use ($context·2) {
+        extract($context·2);
+
+        if ($shouldResolve) {
+            $resolve("yay!");
+        } else {
+            $fail("boo hoo!");
+        }
+    });
 }, get_defined_vars());
