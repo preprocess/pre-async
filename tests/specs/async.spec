@@ -5,12 +5,12 @@ Test async macro
 --GIVEN--
 
 async function read($path) {
-    $content = yield \Amp\File\get($path);
-    return $content;
+    $content = await \Amp\File\get($path);
+    return $content . " await";
 }
 
 $async = async function($path) {
-    $content = yield \Amp\File\get($path);
+    $content = await \Amp\File\get($path);
     return $content;
 };
 
@@ -18,7 +18,7 @@ $promise = promise {
   if ($shouldResolve) {
     $resolve("yay!");
   } else {
-    $fail("boo hoo!");
+    $reject("boo hoo!");
   }
 }
 
@@ -31,18 +31,18 @@ function read($path)
             extract($context·0);
 
             $content = yield \Amp\File\get($path);
-            return $content;
+            return $content . " await";
         });
     }, get_defined_vars());
 }
 
-$async = call_user_func(function ($outer·1) {
-    return function ($path) use ($outer·1) {
+$async = call_user_func(function ($outer·2) {
+    return function ($path) use ($outer·2) {
         return \Amp\call(
-                call_user_func(function ($inner·1) use ($outer·1) {
-                    return function () use ($outer·1, $inner·1) {
-                        extract($outer·1);
-                        extract($inner·1);
+                call_user_func(function ($inner·2) use ($outer·2) {
+                    return function () use ($outer·2, $inner·2) {
+                        extract($outer·2);
+                        extract($inner·2);
                         $content = yield \Amp\File\get($path);
                         return $content;
                     };
@@ -51,14 +51,14 @@ $async = call_user_func(function ($outer·1) {
     };
 }, get_defined_vars());
 
-$promise = call_user_func(function ($context·2) {
-    return new \Amp\Deferred(function (callable $resolve, callable $fail) use ($context·2) {
-        extract($context·2);
+$promise = call_user_func(function ($context·4) {
+    return new \Amp\Internal\PrivatePromise(function (callable $resolve, callable $reject) use ($context·4) {
+        extract($context·4);
 
         if ($shouldResolve) {
             $resolve("yay!");
         } else {
-            $fail("boo hoo!");
+            $reject("boo hoo!");
         }
     });
 }, get_defined_vars());

@@ -42,10 +42,16 @@ macro ·recursion {
     )
 } >> {
     call_user_func(function($context) {
-        return new \Amp\Deferred(function (callable ··unsafe($resolve), callable ··unsafe($fail)) use ($context) {
+        return new \Amp\Internal\PrivatePromise(function (callable ··unsafe($resolve), callable ··unsafe($reject)) use ($context) {
             extract($context);
 
             ·body
         });
     }, get_defined_vars());
+}
+
+macro {
+    await
+} >> {
+    yield
 }
