@@ -1,0 +1,292 @@
+<?php
+
+macro {
+    await
+} >> {
+    yield
+}
+
+macro {
+    ·chain(
+        async,
+        ·optional(
+            ·either(
+                public,
+                protected,
+                private
+            )
+        )·visibility,
+        function,
+        ·ns()·function,
+        ·token("("),
+        ·optional(
+            ·ls(
+                ·chain(
+                    ·optional(·ns())·argType,
+                    ·token(T_VARIABLE)·argName,
+                    ·optional(
+                        ·chain(
+                            ·token("="),
+                            ·either(
+                                ·ns(),
+                                ·chain(
+                                    ·optional(·token(T_NEW)),
+                                    ·ns(), ·token("("), ·layer(), ·token(")")
+                                ),
+                                ·token(T_CONSTANT_ENCAPSED_STRING),
+                                ·token(T_LNUMBER),
+                                ·token(T_DNUMBER),
+                                ·token(T_STRING),
+                                ·chain(
+                                    ·token("["), ·layer(), ·token("]")
+                                )
+                            )
+                        )
+                    )·argAssignment
+                )·arg,
+                ·token(",")
+            )
+        )·args,
+        ·token(")"),
+        ·token(";")
+    )
+} >> {··trim(
+    ·visibility function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignment } }): \Amp\Promise;
+)}
+
+macro ·recursion {
+    ·chain(
+        async,
+        ·optional(
+            ·either(
+                public,
+                protected,
+                private
+            )
+        )·visibility,
+        function,
+        ·ns()·function,
+        ·token("("),
+        ·optional(
+            ·ls(
+                ·chain(
+                    ·optional(·ns())·argType,
+                    ·token(T_VARIABLE)·argName,
+                    ·optional(
+                        ·chain(
+                            ·token("="),
+                            ·either(
+                                ·ns(),
+                                ·chain(
+                                    ·optional(new),
+                                    ·ns(), ·token("("), ·layer(), ·token(")")
+                                ),
+                                ·token(T_CONSTANT_ENCAPSED_STRING),
+                                ·token(T_LNUMBER),
+                                ·token(T_DNUMBER),
+                                ·token(T_STRING),
+                                ·chain(
+                                    ·token("["), ·layer(), ·token("]")
+                                )
+                            )
+                        )
+                    )·argAssignment
+                )·arg,
+                ·token(",")
+            )
+        )·args,
+        ·token(")"),
+        ·token("{"),
+        ·layer()·body,
+        ·token("}"),
+        ·_()·scope,
+        ·_()·simple,
+        ·_()·yields
+    )
+} >> function($ast) {
+    $defined = [];
+    $yields = false;
+
+    foreach ($ast->{"·args"} as $node) {
+        $name = $node["·arg"]["·argName"]->value();
+        $defined[$name] = true;
+    }
+
+    $bound = false;
+    $scope = new \Yay\Ast("·scope");
+
+    $pushed = [];
+
+    foreach ($ast->{"·body"} as $token) {
+        $name = $token->value();
+
+        if (in_array($token->value(), ["yield", "await"])) {
+            $yields = true;
+            continue;
+        }
+
+        if (!$token->is(T_VARIABLE)) {
+            continue;
+        }
+
+        if (!isset($defined[$name]) || isset($pushed[$name])) {
+            continue;
+        }
+
+        if (substr($name, 1) === "this") {
+            continue;
+        }
+
+        $pushed[$name] = true;
+        $scope->push(new \Yay\Ast("·var", $token));
+        $bound = true;
+    }
+
+    if ($bound) {
+      $ast->append($scope);
+    } else {
+      $append = new \Yay\Ast("·simple");
+      $append->push(new \Yay\Ast());
+
+      $ast->append($append);
+    }
+
+    if (!$yields) {
+        $append = new \Yay\Ast("·yields");
+        $append->push(new \Yay\Ast());
+
+        $ast->append($append);
+    }
+} >> {··trim(
+    ·scope ?·{
+        ·visibility function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignment } }): \Amp\Promise
+        {
+            return call_user_func(PRE_ASYNC_WRAPPER, function () use (·scope ···(, ) { &·var }) {
+                ·body ·yields ?·{yield;}
+            });
+        }
+    }
+
+    ·simple ?·{
+        ·visibility function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignment } }): \Amp\Promise
+        {
+            return call_user_func(PRE_ASYNC_WRAPPER, function () {
+                ·body ·yields ?·{yield;}
+            });
+        }
+    }
+)}
+
+macro ·recursion {
+    ·chain(
+        async,
+        ·optional(function),
+        ·token("("),
+        ·optional(
+            ·ls(
+                ·chain(
+                    ·optional(·ns())·argType,
+                    ·token(T_VARIABLE)·argName,
+                    ·optional(
+                        ·chain(
+                            ·token("="),
+                            ·either(
+                                ·ns(),
+                                ·chain(
+                                    ·optional(new),
+                                    ·ns(), ·token("("), ·layer(), ·token(")")
+                                ),
+                                ·token(T_CONSTANT_ENCAPSED_STRING),
+                                ·token(T_LNUMBER),
+                                ·token(T_DNUMBER),
+                                ·token(T_STRING),
+                                ·chain(
+                                    ·token("["), ·layer(), ·token("]")
+                                )
+                            )
+                        )
+                    )·argAssignment
+                )·arg,
+                ·token(",")
+            )
+        )·args,
+        ·token(")"),
+        ·optional(·token(T_DOUBLE_ARROW)),
+        ·token("{"),
+        ·layer()·body,
+        ·token("}"),
+        ·_()·scope,
+        ·_()·simple,
+        ·_()·yields
+    )
+} >> function($ast) {
+    $defined = [];
+    $yields = false;
+
+    foreach ($ast->{"·args"} as $node) {
+        $name = $node["·arg"]["·argName"]->value();
+        $defined[$name] = true;
+    }
+
+    $bound = false;
+    $scope = new \Yay\Ast("·scope");
+
+    $pushed = [];
+
+    foreach ($ast->{"·body"} as $token) {
+        $name = $token->value();
+
+        if (in_array($token->value(), ["yield", "await"])) {
+            $yields = true;
+            continue;
+        }
+
+        if (!$token->is(T_VARIABLE)) {
+            continue;
+        }
+
+        if (isset($defined[$name]) || isset($pushed[$name])) {
+            continue;
+        }
+
+        if (substr($name, 1) === "this") {
+            continue;
+        }
+
+        $pushed[$name] = true;
+        $scope->push(new \Yay\Ast("·var", $token));
+        $bound = true;
+    }
+
+    if ($bound) {
+      $ast->append($scope);
+    } else {
+      $append = new \Yay\Ast("·simple");
+      $append->push(new \Yay\Ast());
+
+      $ast->append($append);
+    }
+
+    if (!$yields) {
+        $append = new \Yay\Ast("·yields");
+        $append->push(new \Yay\Ast());
+
+        $ast->append($append);
+    }
+} >> {··trim(
+    ·scope ?·{
+        [·scope ···(, ) { ·var = ·var ?? null}, "fn" => function (·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignment } }) use (·scope ···(, ) { &·var }): \Amp\Promise {
+            return call_user_func(PRE_ASYNC_WRAPPER, function () use (·scope ···(, ) { &·var }) {
+                ·body ·yields ?·{yield;}
+            });
+        }]["fn"]
+    }
+
+    ·simple ?·{
+        function (·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignment } }): \Amp\Promise {
+            return call_user_func(PRE_ASYNC_WRAPPER, function () {
+                ·body ·yields ?·{yield;}
+            });
+        }
+    }
+)}
