@@ -11,7 +11,7 @@ interface AsyncInterface
 
 class AsyncClass
 {
-    async public function first()
+    async public function first(array $data = [])
     {
         await \Amp\File\get("path/to/file");
     }
@@ -44,7 +44,7 @@ interface AsyncInterface
 
 class AsyncClass
 {
-    public function first(): \Amp\Promise
+    public function first(array $data = []): \Amp\Promise
     {
         return call_user_func(PRE_ASYNC_WRAPPER, function () {
             yield \Amp\File\get("path/to/file");
