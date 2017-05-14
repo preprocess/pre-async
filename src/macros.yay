@@ -22,27 +22,28 @@ macro {
         ·optional(
             ·ls(
                 ·chain(
-                    ·optional(·ns())·argType,
-                    ·token(T_VARIABLE)·argName,
                     ·optional(
-                        ·chain(
-                            ·token("="),
-                            ·either(
-                                ·ns(),
-                                ·chain(
-                                    ·optional(·token(T_NEW)),
-                                    ·ns(), ·token("("), ·layer(), ·token(")")
-                                ),
-                                ·token(T_CONSTANT_ENCAPSED_STRING),
-                                ·token(T_LNUMBER),
-                                ·token(T_DNUMBER),
-                                ·token(T_STRING),
-                                ·chain(
-                                    ·token("["), ·layer(), ·token("]")
-                                )
-                            )
+                        ·either(
+                            ·ns(),
+                            ·token(T_ARRAY)
                         )
-                    )·argAssignment
+                    )·argType,
+                    ·token(T_VARIABLE)·argName,
+                    ·optional(·token("="))·argAssignmentEq,
+                    ·optional(·either(
+                        ·ns(),
+                        ·chain(
+                            ·optional(new),
+                            ·ns(), ·token("("), ·layer(), ·token(")")
+                        ),
+                        ·token(T_CONSTANT_ENCAPSED_STRING),
+                        ·token(T_LNUMBER),
+                        ·token(T_DNUMBER),
+                        ·token(T_STRING),
+                        ·chain(
+                            ·token("["), ·layer(), ·token("]")
+                        )
+                    ))·argAssignmentVal
                 )·arg,
                 ·token(",")
             )
@@ -51,7 +52,7 @@ macro {
         ·token(";")
     )
 } >> {··trim(
-    ·visibility function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignment } }): \Amp\Promise;
+    ·visibility function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignmentVal } }): \Amp\Promise;
 )}
 
 macro ·recursion {
@@ -70,27 +71,28 @@ macro ·recursion {
         ·optional(
             ·ls(
                 ·chain(
-                    ·optional(·ns())·argType,
-                    ·token(T_VARIABLE)·argName,
                     ·optional(
-                        ·chain(
-                            ·token("="),
-                            ·either(
-                                ·ns(),
-                                ·chain(
-                                    ·optional(new),
-                                    ·ns(), ·token("("), ·layer(), ·token(")")
-                                ),
-                                ·token(T_CONSTANT_ENCAPSED_STRING),
-                                ·token(T_LNUMBER),
-                                ·token(T_DNUMBER),
-                                ·token(T_STRING),
-                                ·chain(
-                                    ·token("["), ·layer(), ·token("]")
-                                )
-                            )
+                        ·either(
+                            ·ns(),
+                            ·token(T_ARRAY)
                         )
-                    )·argAssignment
+                    )·argType,
+                    ·token(T_VARIABLE)·argName,
+                    ·optional(·token("="))·argAssignmentEq,
+                    ·optional(·either(
+                        ·ns(),
+                        ·chain(
+                            ·optional(new),
+                            ·ns(), ·token("("), ·layer(), ·token(")")
+                        ),
+                        ·token(T_CONSTANT_ENCAPSED_STRING),
+                        ·token(T_LNUMBER),
+                        ·token(T_DNUMBER),
+                        ·token(T_STRING),
+                        ·chain(
+                            ·token("["), ·layer(), ·token("]")
+                        )
+                    ))·argAssignmentVal
                 )·arg,
                 ·token(",")
             )
@@ -159,7 +161,7 @@ macro ·recursion {
     }
 } >> {··trim(
     ·scope ?·{
-        ·visibility function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignment } }): \Amp\Promise
+        ·visibility function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignmentVal } }): \Amp\Promise
         {
             return call_user_func(PRE_ASYNC_WRAPPER, function () use (·scope ···(, ) { &·var }) {
                 ·body ·yields ?·{yield;}
@@ -168,7 +170,7 @@ macro ·recursion {
     }
 
     ·simple ?·{
-        ·visibility function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignment } }): \Amp\Promise
+        ·visibility function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignmentVal } }): \Amp\Promise
         {
             return call_user_func(PRE_ASYNC_WRAPPER, function () {
                 ·body ·yields ?·{yield;}
@@ -185,27 +187,28 @@ macro ·recursion {
         ·optional(
             ·ls(
                 ·chain(
-                    ·optional(·ns())·argType,
-                    ·token(T_VARIABLE)·argName,
                     ·optional(
-                        ·chain(
-                            ·token("="),
-                            ·either(
-                                ·ns(),
-                                ·chain(
-                                    ·optional(new),
-                                    ·ns(), ·token("("), ·layer(), ·token(")")
-                                ),
-                                ·token(T_CONSTANT_ENCAPSED_STRING),
-                                ·token(T_LNUMBER),
-                                ·token(T_DNUMBER),
-                                ·token(T_STRING),
-                                ·chain(
-                                    ·token("["), ·layer(), ·token("]")
-                                )
-                            )
+                        ·either(
+                            ·ns(),
+                            ·token(T_ARRAY)
                         )
-                    )·argAssignment
+                    )·argType,
+                    ·token(T_VARIABLE)·argName,
+                    ·optional(·token("="))·argAssignmentEq,
+                    ·optional(·either(
+                        ·ns(),
+                        ·chain(
+                            ·optional(new),
+                            ·ns(), ·token("("), ·layer(), ·token(")")
+                        ),
+                        ·token(T_CONSTANT_ENCAPSED_STRING),
+                        ·token(T_LNUMBER),
+                        ·token(T_DNUMBER),
+                        ·token(T_STRING),
+                        ·chain(
+                            ·token("["), ·layer(), ·token("]")
+                        )
+                    ))·argAssignmentVal
                 )·arg,
                 ·token(",")
             )
@@ -275,7 +278,7 @@ macro ·recursion {
     }
 } >> {··trim(
     ·scope ?·{
-        [·scope ···(, ) { ·var = ·var ?? null}, "fn" => function (·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignment } }) use (·scope ···(, ) { &·var }): \Amp\Promise {
+        [·scope ···(, ) { ·var = ·var ?? null}, "fn" => function (·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignmentVal } }) use (·scope ···(, ) { &·var }): \Amp\Promise {
             return call_user_func(PRE_ASYNC_WRAPPER, function () use (·scope ···(, ) { &·var }) {
                 ·body ·yields ?·{yield;}
             });
@@ -283,7 +286,7 @@ macro ·recursion {
     }
 
     ·simple ?·{
-        function (·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignment } }): \Amp\Promise {
+        function (·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignVal } }): \Amp\Promise {
             return call_user_func(PRE_ASYNC_WRAPPER, function () {
                 ·body ·yields ?·{yield;}
             });
