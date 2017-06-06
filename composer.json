@@ -3,7 +3,7 @@
     "name": "pre/async",
     "license": "MIT",
     "require": {
-        "pre/plugin": "^0.7"
+        "pre/plugin": "^0.7.3"
     },
     "autoload": {
         "files": [
