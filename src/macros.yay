@@ -104,6 +104,12 @@ macro ·recursion {
             )
         )·args,
         ·token(")"),
+        ·optional(
+            ·chain(
+                ·token(":"),
+                ·ns()
+            )
+        ),
         ·token("{"),
         ·layer()·body,
         ·token("}"),
@@ -220,6 +226,12 @@ macro ·recursion {
             )
         )·args,
         ·token(")"),
+        ·optional(
+            ·chain(
+                ·token(":"),
+                ·ns()
+            )
+        ),
         ·optional(·token(T_DOUBLE_ARROW)),
         ·token("{"),
         ·layer()·body,

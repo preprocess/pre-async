@@ -21,7 +21,7 @@ class AsyncClass
         return "boo!";
     }
 
-    async public static function complex()
+    async public static function complex(): string
     {
 
     }
