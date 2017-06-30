@@ -115,9 +115,21 @@ macro ·recursion {
         ·token("}"),
         ·_()·scope,
         ·_()·simple,
-        ·_()·yields
+        ·_()·yields,
+        ·_()·amp1,
+        ·_()·amp2
     )
 } >> function($ast) {
+    if (function_exists("\\Amp\\resolve")) {
+        $append = new \Yay\Ast("·amp1");
+        $append->push(new \Yay\Ast());
+        $ast->append($append);
+    } else {
+        $append = new \Yay\Ast("·amp2");
+        $append->push(new \Yay\Ast());
+        $ast->append($append);
+    }
+
     $defined = [];
     $yields = false;
 
@@ -175,18 +187,26 @@ macro ·recursion {
     ·scope ?·{
         ··trim(·modifiers ···( ) { ·modifier }) function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignmentVal } }): \Amp\Promise
         {
-            return call_user_func(PRE_ASYNC_WRAPPER, function () use (·scope ···(, ) { &·var }) {
-                ·body ·yields ?·{yield;}
-            });
+            return ··trim(
+                ·amp1 ?· { \Amp\resolve }
+                ·amp2 ?· { \Amp\call }
+                (function () use (·scope ···(, ) { &·var }) {
+                    ·body ·yields ?·{yield;}
+                });
+            )
         }
     }
 
     ·simple ?·{
         ··trim(·modifiers ···( ) { ·modifier }) function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignmentVal } }): \Amp\Promise
         {
-            return call_user_func(PRE_ASYNC_WRAPPER, function () {
-                ·body ·yields ?·{yield;}
-            });
+            return ··trim(
+                ·amp1 ?· { \Amp\resolve }
+                ·amp2 ?· { \Amp\call }
+                (function () {
+                    ·body ·yields ?·{yield;}
+                });
+            )
         }
     }
 )}
@@ -238,9 +258,21 @@ macro ·recursion {
         ·token("}"),
         ·_()·scope,
         ·_()·simple,
-        ·_()·yields
+        ·_()·yields,
+        ·_()·amp1,
+        ·_()·amp2
     )
 } >> function($ast) {
+    if (function_exists("\\Amp\\resolve")) {
+        $append = new \Yay\Ast("·amp1");
+        $append->push(new \Yay\Ast());
+        $ast->append($append);
+    } else {
+        $append = new \Yay\Ast("·amp2");
+        $append->push(new \Yay\Ast());
+        $ast->append($append);
+    }
+
     $defined = [];
     $yields = false;
 
@@ -297,17 +329,25 @@ macro ·recursion {
 } >> {··trim(
     ·scope ?·{
         [·scope ···(, ) { ·var = ·var ?? null}, "fn" => function (·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignmentVal } }) use (·scope ···(, ) { &·var }): \Amp\Promise {
-            return call_user_func(PRE_ASYNC_WRAPPER, function () use (·scope ···(, ) { &·var }) {
-                ·body ·yields ?·{yield;}
-            });
+            return ··trim(
+                ·amp1 ?· { \Amp\resolve }
+                ·amp2 ?· { \Amp\call }
+                (function () use (·scope ···(, ) { &·var }) {
+                    ·body ·yields ?·{yield;}
+                });
+            )
         }]["fn"]
     }
 
     ·simple ?·{
         function (·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignVal } }): \Amp\Promise {
-            return call_user_func(PRE_ASYNC_WRAPPER, function () {
-                ·body ·yields ?·{yield;}
-            });
+            return ··trim(
+                ·amp1 ?· { \Amp\resolve }
+                ·amp2 ?· { \Amp\call }
+                (function () {
+                    ·body ·yields ?·{yield;}
+                });
+            )
         }
     }
 )}
