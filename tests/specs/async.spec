@@ -20,6 +20,11 @@ class AsyncClass
     {
         return "boo!";
     }
+
+    async public static function complex()
+    {
+
+    }
 }
 
 $first = async function() {
@@ -55,6 +60,13 @@ class AsyncClass
     {
         return call_user_func(PRE_ASYNC_WRAPPER, function () {
             return "boo!";
+            yield;
+        });
+    }
+
+    public static function complex(): \Amp\Promise
+    {
+        return call_user_func(PRE_ASYNC_WRAPPER, function () {
             yield;
         });
     }
