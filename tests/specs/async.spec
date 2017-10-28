@@ -1,13 +1,16 @@
---DESCRIPTION--
-
-Test async macros
-
---GIVEN--
-
 interface AsyncInterface
 {
     async public function run();
 }
+
+~~~
+
+interface AsyncInterface
+{
+    public function run(): \Amp\Promise;
+}
+
+---
 
 class AsyncClass
 {
@@ -27,25 +30,7 @@ class AsyncClass
     }
 }
 
-$first = async function() {
-    yield "here";
-};
-
-$second = async function() {
-    $this->something();
-    yield $thing;
-};
-
-$third = async () => {
-    yield $thing;
-};
-
---EXPECT--
-
-interface AsyncInterface
-{
-    public function run(): \Amp\Promise;
-}
+~~~
 
 class AsyncClass
 {
@@ -71,6 +56,23 @@ class AsyncClass
         });
     }
 }
+
+---
+
+$first = async function() {
+    yield "here";
+};
+
+$second = async function() {
+    $this->something();
+    yield $thing;
+};
+
+$third = async () => {
+    yield $thing;
+};
+
+~~~
 
 $first = function (): \Amp\Promise {
     return \Amp\call(function () {
