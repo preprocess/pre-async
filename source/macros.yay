@@ -1,353 +1,116 @@
 <?php
 
-macro {
+$(macro) {
     await
 } >> {
     yield
 }
 
-macro {
-    ·chain(
-        async,
-        ·optional(
-            ·repeat(
-                ·either(
-                    public,
-                    protected,
-                    private,
-                    static
-                )·modifier
-            )
-        )·modifiers,
-        function,
-        ·ns()·function,
-        ·token("("),
-        ·optional(
-            ·ls(
-                ·chain(
-                    ·optional(
-                        ·either(
-                            ·ns(),
-                            ·token(T_ARRAY)
-                        )
-                    )·argType,
-                    ·token(T_VARIABLE)·argName,
-                    ·optional(·token("="))·argAssignmentEq,
-                    ·optional(·either(
-                        ·ns(),
-                        ·chain(
-                            ·optional(new),
-                            ·ns(), ·token("("), ·layer(), ·token(")")
-                        ),
-                        ·token(T_CONSTANT_ENCAPSED_STRING),
-                        ·token(T_LNUMBER),
-                        ·token(T_DNUMBER),
-                        ·token(T_STRING),
-                        ·chain(
-                            ·token("["), ·layer(), ·token("]")
-                        )
-                    ))·argAssignmentVal
-                )·arg,
-                ·token(",")
-            )
-        )·args,
-        ·token(")"),
-        ·token(";")
-    )
-} >> {··trim(
-    ··trim(·modifiers ···( ) { ·modifier }) function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignmentVal } }): \Amp\Promise;
-)}
+$(macro) {
+    $(chain(
+        buffer("async"),
+        functionModifiers(),
+        buffer("function"),
+        ns() as function,
+        buffer("("),
+        functionArguments(),
+        buffer(")"),
+        functionReturn(),
+        buffer(";")
+    ))
+} >> {$$(trim(
+    $$(functionModifiers($(functionModifiers))) function $(function)($(functionArguments ... (, ) { $$(functionArgument($(functionArgument))) })): \Amp\Promise;
+))}
 
-macro ·recursion {
-    ·chain(
-        async,
-        ·optional(
-            ·repeat(
-                ·either(
-                    public,
-                    protected,
-                    private,
-                    static
-                )·modifier
-            )
-        )·modifiers,
-        function,
-        ·ns()·function,
-        ·token("("),
-        ·optional(
-            ·ls(
-                ·chain(
-                    ·optional(
-                        ·either(
-                            ·ns(),
-                            ·token(T_ARRAY)
-                        )
-                    )·argType,
-                    ·token(T_VARIABLE)·argName,
-                    ·optional(·token("="))·argAssignmentEq,
-                    ·optional(·either(
-                        ·ns(),
-                        ·chain(
-                            ·optional(new),
-                            ·ns(), ·token("("), ·layer(), ·token(")")
-                        ),
-                        ·token(T_CONSTANT_ENCAPSED_STRING),
-                        ·token(T_LNUMBER),
-                        ·token(T_DNUMBER),
-                        ·token(T_STRING),
-                        ·chain(
-                            ·token("["), ·layer(), ·token("]")
-                        )
-                    ))·argAssignmentVal
-                )·arg,
-                ·token(",")
-            )
-        )·args,
-        ·token(")"),
-        ·optional(
-            ·chain(
-                ·token(":"),
-                ·ns()
-            )
-        ),
-        ·token("{"),
-        ·layer()·body,
-        ·token("}"),
-        ·_()·scope,
-        ·_()·simple,
-        ·_()·yields,
-        ·_()·amp1,
-        ·_()·amp2
-    )
+$(macro :recursion) {
+    $(chain(
+        buffer("async"),
+        functionModifiers(),
+        buffer("function"),
+        ns() as function,
+        buffer("("),
+        functionArguments(),
+        buffer(")"),
+        functionReturn(),
+        buffer("{"),
+        layer() as body,
+        buffer("}"),
+        _() as scope,
+        _() as yields,
+        _() as amp1,
+        _() as amp2
+    ))
 } >> function($ast) {
-    if (function_exists("\\Amp\\resolve")) {
-        $append = new \Yay\Ast("·amp1");
-        $append->push(new \Yay\Ast());
-        $ast->append($append);
-    } else {
-        $append = new \Yay\Ast("·amp2");
-        $append->push(new \Yay\Ast());
-        $ast->append($append);
-    }
-
-    $defined = [];
-    $yields = false;
-
-    foreach ($ast->{"·args"} as $node) {
-        $name = $node["·arg"]["·argName"]->value();
-        $defined[$name] = true;
-    }
-
-    $bound = false;
-    $scope = new \Yay\Ast("·scope");
-
-    $pushed = [];
-
-    foreach ($ast->{"·body"} as $token) {
-        $name = $token->value();
-
-        if (in_array($token->value(), ["yield", "await"])) {
-            $yields = true;
-            continue;
-        }
-
-        if (!$token->is(T_VARIABLE)) {
-            continue;
-        }
-
-        if (!isset($defined[$name]) || isset($pushed[$name])) {
-            continue;
-        }
-
-        if (substr($name, 1) === "this") {
-            continue;
-        }
-
-        $pushed[$name] = true;
-        $scope->push(new \Yay\Ast("·var", $token));
-        $bound = true;
-    }
-
-    if ($bound) {
-      $ast->append($scope);
-    } else {
-      $append = new \Yay\Ast("·simple");
-      $append->push(new \Yay\Ast());
-
-      $ast->append($append);
-    }
-
-    if (!$yields) {
-        $append = new \Yay\Ast("·yields");
-        $append->push(new \Yay\Ast());
-
-        $ast->append($append);
-    }
-} >> {··trim(
-    ·scope ?·{
-        ··trim(·modifiers ···( ) { ·modifier }) function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignmentVal } }): \Amp\Promise
+    return \Pre\Async\closure($ast);
+} >> {$$(trim(
+    $(scope ? {
+        $$(functionModifiers($(functionModifiers))) function $(function)($(functionArguments ... (, ) { $$(functionArgument($(functionArgument))) })): \Amp\Promise
         {
-            return ··trim(
-                ·amp1 ?· { \Amp\resolve }
-                ·amp2 ?· { \Amp\call }
-                (function () use (·scope ···(, ) { &·var }) {
-                    ·body ·yields ?·{yield;}
+            return $$(trim(
+                $(amp1 ? { \Amp\resolve })
+                $(amp2 ? { \Amp\call })
+                (function () use ($(scope ... (, ) { &$(var) })) {
+                    $(body) $(yields ? {yield;})
                 });
-            )
+            ))
         }
-    }
+    })
 
-    ·simple ?·{
-        ··trim(·modifiers ···( ) { ·modifier }) function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignmentVal } }): \Amp\Promise
+    $(scope ! {
+        $$(functionModifiers($(functionModifiers))) function $(function)($(functionArguments ... (, ) { $$(functionArgument($(functionArgument))) })): \Amp\Promise
         {
-            return ··trim(
-                ·amp1 ?· { \Amp\resolve }
-                ·amp2 ?· { \Amp\call }
+            return $$(trim(
+                $(amp1 ? { \Amp\resolve })
+                $(amp2 ? { \Amp\call })
                 (function () {
-                    ·body ·yields ?·{yield;}
+                    $(body) $(yields ? {yield;})
                 });
-            )
+            ))
         }
-    }
-)}
+    })
+))}
 
-macro ·recursion {
-    ·chain(
-        async,
-        ·optional(function),
-        ·token("("),
-        ·optional(
-            ·ls(
-                ·chain(
-                    ·optional(
-                        ·either(
-                            ·ns(),
-                            ·token(T_ARRAY)
-                        )
-                    )·argType,
-                    ·token(T_VARIABLE)·argName,
-                    ·optional(·token("="))·argAssignmentEq,
-                    ·optional(·either(
-                        ·ns(),
-                        ·chain(
-                            ·optional(new),
-                            ·ns(), ·token("("), ·layer(), ·token(")")
-                        ),
-                        ·token(T_CONSTANT_ENCAPSED_STRING),
-                        ·token(T_LNUMBER),
-                        ·token(T_DNUMBER),
-                        ·token(T_STRING),
-                        ·chain(
-                            ·token("["), ·layer(), ·token("]")
-                        )
-                    ))·argAssignmentVal
-                )·arg,
-                ·token(",")
-            )
-        )·args,
-        ·token(")"),
-        ·optional(
-            ·chain(
-                ·token(":"),
-                ·ns()
-            )
-        ),
-        ·optional(·token(T_DOUBLE_ARROW)),
-        ·token("{"),
-        ·layer()·body,
-        ·token("}"),
-        ·_()·scope,
-        ·_()·simple,
-        ·_()·yields,
-        ·_()·amp1,
-        ·_()·amp2
-    )
+$(macro :recursion) {
+    $(chain(
+        buffer("async"),
+        optional(buffer("function")),
+        buffer("("),
+        functionArguments(),
+        buffer(")"),
+        functionReturn(),
+        optional(buffer("~>")),
+        buffer("{"),
+        layer() as body,
+        buffer("}"),
+        _() as scope,
+        _() as yields,
+        _() as amp1,
+        _() as amp2
+    ))
 } >> function($ast) {
-    if (function_exists("\\Amp\\resolve")) {
-        $append = new \Yay\Ast("·amp1");
-        $append->push(new \Yay\Ast());
-        $ast->append($append);
-    } else {
-        $append = new \Yay\Ast("·amp2");
-        $append->push(new \Yay\Ast());
-        $ast->append($append);
-    }
-
-    $defined = [];
-    $yields = false;
-
-    foreach ($ast->{"·args"} as $node) {
-        $name = $node["·arg"]["·argName"]->value();
-        $defined[$name] = true;
-    }
-
-    $bound = false;
-    $scope = new \Yay\Ast("·scope");
-
-    $pushed = [];
-
-    foreach ($ast->{"·body"} as $token) {
-        $name = $token->value();
-
-        if (in_array($token->value(), ["yield", "await"])) {
-            $yields = true;
-            continue;
-        }
-
-        if (!$token->is(T_VARIABLE)) {
-            continue;
-        }
-
-        if (isset($defined[$name]) || isset($pushed[$name])) {
-            continue;
-        }
-
-        if (substr($name, 1) === "this") {
-            continue;
-        }
-
-        $pushed[$name] = true;
-        $scope->push(new \Yay\Ast("·var", $token));
-        $bound = true;
-    }
-
-    if ($bound) {
-      $ast->append($scope);
-    } else {
-      $append = new \Yay\Ast("·simple");
-      $append->push(new \Yay\Ast());
-
-      $ast->append($append);
-    }
-
-    if (!$yields) {
-        $append = new \Yay\Ast("·yields");
-        $append->push(new \Yay\Ast());
-
-        $ast->append($append);
-    }
-} >> {··trim(
-    ·scope ?·{
-        [·scope ···(, ) { ·var = ·var ?? null}, "fn" => function (·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignmentVal } }) use (·scope ···(, ) { &·var }): \Amp\Promise {
-            return ··trim(
-                ·amp1 ?· { \Amp\resolve }
-                ·amp2 ?· { \Amp\call }
-                (function () use (·scope ···(, ) { &·var }) {
-                    ·body ·yields ?·{yield;}
+    return \Pre\Async\closure($ast);
+} >> {$$(trim(
+    $(scope ? {
+        [$(scope ... (, ) { $(var) = $(var) ?? null}), "fn" => function ($(functionArguments ... (, ) { $$(functionArgument($(functionArgument))) })) use ($(scope ... (, ) { &$(var) })): \Amp\Promise {
+            return $$(trim(
+                $(amp1 ? { \Amp\resolve })
+                $(amp2 ? { \Amp\call })
+                (function () use ($(scope ... (, ) { &$(var) })) {
+                    $(body) $(yields ? {yield;})
                 });
-            )
+            ))
         }]["fn"]
-    }
+    })
 
-    ·simple ?·{
-        function (·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignVal } }): \Amp\Promise {
-            return ··trim(
-                ·amp1 ?· { \Amp\resolve }
-                ·amp2 ?· { \Amp\call }
+    $(scope ! {
+        function ($(functionArguments ... (, ) { $$(functionArgument($(functionArgument))) })): \Amp\Promise {
+            return $$(trim(
+                $(amp1 ? { \Amp\resolve })
+                $(amp2 ? { \Amp\call })
                 (function () {
-                    ·body ·yields ?·{yield;}
+                    $(body) $(yields ? {yield;})
                 });
-            )
+            ))
         }
-    }
-)}
+    })
+))}
