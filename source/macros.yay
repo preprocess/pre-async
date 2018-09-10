@@ -1,131 +1,135 @@
 <?php
 
-macro {
+$(macro) {
     await
 } >> {
     yield
 }
 
-macro {
-    ·chain(
+$(macro) {
+    $(chain(
         async,
-        ·optional(
-            ·repeat(
-                ·either(
+        optional(
+            repeat(
+                either(
                     public,
                     protected,
                     private,
                     static
-                )·modifier
+                ) as modifier
             )
-        )·modifiers,
+        ) as modifiers,
         function,
-        ·ns()·function,
-        ·token("("),
-        ·optional(
-            ·ls(
-                ·chain(
-                    ·optional(
-                        ·either(
-                            ·ns(),
-                            ·token(T_ARRAY)
+        ns() as function,
+        token("("),
+        optional(
+            ls(
+                chain(
+                    optional(
+                        either(
+                            ns(),
+                            token(T_ARRAY)
                         )
-                    )·argType,
-                    ·token(T_VARIABLE)·argName,
-                    ·optional(·token("="))·argAssignmentEq,
-                    ·optional(·either(
-                        ·ns(),
-                        ·chain(
-                            ·optional(new),
-                            ·ns(), ·token("("), ·layer(), ·token(")")
-                        ),
-                        ·token(T_CONSTANT_ENCAPSED_STRING),
-                        ·token(T_LNUMBER),
-                        ·token(T_DNUMBER),
-                        ·token(T_STRING),
-                        ·chain(
-                            ·token("["), ·layer(), ·token("]")
+                    ) as argType,
+                    token(T_VARIABLE) as argName,
+                    optional(token("=") as argAssignmentEq),
+                    optional(
+                        either(
+                            ns(),
+                            chain(
+                                optional(new),
+                                ns(), token("("), layer(), token(")")
+                            ),
+                            token(T_CONSTANT_ENCAPSED_STRING),
+                            token(T_LNUMBER),
+                            token(T_DNUMBER),
+                            token(T_STRING),
+                            chain(
+                                token("["), layer(), token("]")
+                            )
                         )
-                    ))·argAssignmentVal
-                )·arg,
-                ·token(",")
+                    ) as argAssignmentVal
+                ) as arg,
+                token(",")
             )
-        )·args,
-        ·token(")"),
-        ·token(";")
-    )
-} >> {··trim(
-    ··trim(·modifiers ···( ) { ·modifier }) function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignmentVal } }): \Amp\Promise;
-)}
+        ) as args,
+        token(")"),
+        token(";")
+    ))
+} >> {$$(trim(
+    $$(trim($(modifiers ... ( ) { $(modifier) }))) function $(function)($(args ... (, ) { $(arg ... { $(argType) $(argName) $(argAssignmentEq) $(argAssignmentVal) })})): \Amp\Promise;
+))}
 
-macro ·recursion {
-    ·chain(
+$(macro :recursion) {
+    $(chain(
         async,
-        ·optional(
-            ·repeat(
-                ·either(
+        optional(
+            repeat(
+                either(
                     public,
                     protected,
                     private,
                     static
-                )·modifier
+                ) as modifier
             )
-        )·modifiers,
+        ) as modifiers,
         function,
-        ·ns()·function,
-        ·token("("),
-        ·optional(
-            ·ls(
-                ·chain(
-                    ·optional(
-                        ·either(
-                            ·ns(),
-                            ·token(T_ARRAY)
+        ns() as function,
+        token("("),
+        optional(
+            ls(
+                chain(
+                    optional(
+                        either(
+                            ns(),
+                            token(T_ARRAY)
                         )
-                    )·argType,
-                    ·token(T_VARIABLE)·argName,
-                    ·optional(·token("="))·argAssignmentEq,
-                    ·optional(·either(
-                        ·ns(),
-                        ·chain(
-                            ·optional(new),
-                            ·ns(), ·token("("), ·layer(), ·token(")")
-                        ),
-                        ·token(T_CONSTANT_ENCAPSED_STRING),
-                        ·token(T_LNUMBER),
-                        ·token(T_DNUMBER),
-                        ·token(T_STRING),
-                        ·chain(
-                            ·token("["), ·layer(), ·token("]")
+                    ) as argType,
+                    token(T_VARIABLE) as argName,
+                    optional(token("=") as argAssignmentEq),
+                    optional(
+                        either(
+                            ns(),
+                            chain(
+                                optional(new),
+                                ns(), token("("), layer(), token(")")
+                            ),
+                            token(T_CONSTANT_ENCAPSED_STRING),
+                            token(T_LNUMBER),
+                            token(T_DNUMBER),
+                            token(T_STRING),
+                            chain(
+                                token("["), layer(), token("]")
+                            )
                         )
-                    ))·argAssignmentVal
-                )·arg,
-                ·token(",")
+                    ) as argAssignmentVal
+                ) as arg,
+                token(",")
             )
-        )·args,
-        ·token(")"),
-        ·optional(
-            ·chain(
-                ·token(":"),
-                ·ns()
+        ) as args,
+        token(")"),
+        optional(
+            chain(
+                token(":"),
+                ns()
             )
         ),
-        ·token("{"),
-        ·layer()·body,
-        ·token("}"),
-        ·_()·scope,
-        ·_()·simple,
-        ·_()·yields,
-        ·_()·amp1,
-        ·_()·amp2
-    )
+        token("{"),
+        layer() as body,
+        token("}"),
+        _() as scope,
+        _() as simple,
+        _() as yields,
+        _() as amp1,
+        _() as amp2
+    ))
 } >> function($ast) {
     if (function_exists("\\Amp\\resolve")) {
-        $append = new \Yay\Ast("·amp1");
+        $append = new \Yay\Ast("amp1");
         $append->push(new \Yay\Ast());
         $ast->append($append);
     } else {
-        $append = new \Yay\Ast("·amp2");
+        $append = new \Yay\Ast("amp2");
         $append->push(new \Yay\Ast());
         $ast->append($append);
     }
@@ -133,17 +137,17 @@ macro ·recursion {
     $defined = [];
     $yields = false;
 
-    foreach ($ast->{"·args"} as $node) {
-        $name = $node["·arg"]["·argName"]->value();
+    foreach ($ast->{"args"} as $node) {
+        $name = $node["arg"]["argName"]->value();
         $defined[$name] = true;
     }
 
     $bound = false;
-    $scope = new \Yay\Ast("·scope");
+    $scope = new \Yay\Ast("scope");
 
     $pushed = [];
 
-    foreach ($ast->{"·body"} as $token) {
+    foreach ($ast->{"body"} as $token) {
         $name = $token->value();
 
         if (in_array($token->value(), ["yield", "await"])) {
@@ -164,111 +168,113 @@ macro ·recursion {
         }
 
         $pushed[$name] = true;
-        $scope->push(new \Yay\Ast("·var", $token));
+        $scope->push(new \Yay\Ast("var", $token));
         $bound = true;
     }
 
     if ($bound) {
       $ast->append($scope);
     } else {
-      $append = new \Yay\Ast("·simple");
+      $append = new \Yay\Ast("simple");
       $append->push(new \Yay\Ast());
 
       $ast->append($append);
     }
 
     if (!$yields) {
-        $append = new \Yay\Ast("·yields");
+        $append = new \Yay\Ast("yields");
         $append->push(new \Yay\Ast());
 
         $ast->append($append);
     }
-} >> {··trim(
-    ·scope ?·{
-        ··trim(·modifiers ···( ) { ·modifier }) function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignmentVal } }): \Amp\Promise
+} >> {$$(trim(
+    $(scope ? {
+        $$(trim($(modifiers ... ( ) { $(modifier) }))) function $(function)($(args ... (, ) { $(arg ... { $(argType) $(argName) $(argAssignmentEq) $(argAssignmentVal) })})): \Amp\Promise
         {
-            return ··trim(
-                ·amp1 ?· { \Amp\resolve }
-                ·amp2 ?· { \Amp\call }
-                (function () use (·scope ···(, ) { &·var }) {
-                    ·body ·yields ?·{yield;}
+            return $$(trim(
+                $(amp1 ? { \Amp\resolve })
+                $(amp2 ? { \Amp\call })
+                (function () use ($(scope ... (, ) { &$(var) })) {
+                    $(body) $(yields ? {yield;})
                 });
-            )
+            ))
         }
-    }
+    })
 
-    ·simple ?·{
-        ··trim(·modifiers ···( ) { ·modifier }) function ·function(·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignmentVal } }): \Amp\Promise
+    $(simple ? {
+        $$(trim($(modifiers ... ( ) { $(modifier) }))) function $(function)($(args ... (, ) { $(arg ... { $(argType) $(argName) $(argAssignmentEq) $(argAssignmentVal) })})): \Amp\Promise
         {
-            return ··trim(
-                ·amp1 ?· { \Amp\resolve }
-                ·amp2 ?· { \Amp\call }
+            return $$(trim(
+                $(amp1 ? { \Amp\resolve })
+                $(amp2 ? { \Amp\call })
                 (function () {
-                    ·body ·yields ?·{yield;}
+                    $(body) $(yields ? {yield;})
                 });
-            )
+            ))
         }
-    }
-)}
+    })
+))}
 
-macro ·recursion {
-    ·chain(
+$(macro :recursion) {
+    $(chain(
         async,
-        ·optional(function),
-        ·token("("),
-        ·optional(
-            ·ls(
-                ·chain(
-                    ·optional(
-                        ·either(
-                            ·ns(),
-                            ·token(T_ARRAY)
+        optional(function),
+        token("("),
+        optional(
+            ls(
+                chain(
+                    optional(
+                        either(
+                            ns(),
+                            token(T_ARRAY)
                         )
-                    )·argType,
-                    ·token(T_VARIABLE)·argName,
-                    ·optional(·token("="))·argAssignmentEq,
-                    ·optional(·either(
-                        ·ns(),
-                        ·chain(
-                            ·optional(new),
-                            ·ns(), ·token("("), ·layer(), ·token(")")
-                        ),
-                        ·token(T_CONSTANT_ENCAPSED_STRING),
-                        ·token(T_LNUMBER),
-                        ·token(T_DNUMBER),
-                        ·token(T_STRING),
-                        ·chain(
-                            ·token("["), ·layer(), ·token("]")
+                    ) as argType,
+                    token(T_VARIABLE) as argName,
+                    optional(token("=") as argAssignmentEq),
+                    optional(
+                        either(
+                            ns(),
+                            chain(
+                                optional(new),
+                                ns(), token("("), layer(), token(")")
+                            ),
+                            token(T_CONSTANT_ENCAPSED_STRING),
+                            token(T_LNUMBER),
+                            token(T_DNUMBER),
+                            token(T_STRING),
+                            chain(
+                                token("["), layer(), token("]")
+                            )
                         )
-                    ))·argAssignmentVal
-                )·arg,
-                ·token(",")
+                    ) as argAssignmentVal
+                ) as arg,
+                token(",")
             )
-        )·args,
-        ·token(")"),
-        ·optional(
-            ·chain(
-                ·token(":"),
-                ·ns()
+        ) as args,
+        token(")"),
+        optional(
+            chain(
+                token(":"),
+                ns()
             )
         ),
-        ·optional(·token(T_DOUBLE_ARROW)),
-        ·token("{"),
-        ·layer()·body,
-        ·token("}"),
-        ·_()·scope,
-        ·_()·simple,
-        ·_()·yields,
-        ·_()·amp1,
-        ·_()·amp2
-    )
+        optional(token(T_DOUBLE_ARROW)),
+        token("{"),
+        layer() as body,
+        token("}"),
+        _() as scope,
+        _() as simple,
+        _() as yields,
+        _() as amp1,
+        _() as amp2
+    ))
 } >> function($ast) {
     if (function_exists("\\Amp\\resolve")) {
-        $append = new \Yay\Ast("·amp1");
+        $append = new \Yay\Ast("amp1");
         $append->push(new \Yay\Ast());
         $ast->append($append);
     } else {
-        $append = new \Yay\Ast("·amp2");
+        $append = new \Yay\Ast("amp2");
         $append->push(new \Yay\Ast());
         $ast->append($append);
     }
@@ -276,17 +282,17 @@ macro ·recursion {
     $defined = [];
     $yields = false;
 
-    foreach ($ast->{"·args"} as $node) {
-        $name = $node["·arg"]["·argName"]->value();
+    foreach ($ast->{"args"} as $node) {
+        $name = $node["arg"]["argName"]->value();
         $defined[$name] = true;
     }
 
     $bound = false;
-    $scope = new \Yay\Ast("·scope");
+    $scope = new \Yay\Ast("scope");
 
     $pushed = [];
 
-    foreach ($ast->{"·body"} as $token) {
+    foreach ($ast->{"body"} as $token) {
         $name = $token->value();
 
         if (in_array($token->value(), ["yield", "await"])) {
@@ -307,47 +313,47 @@ macro ·recursion {
         }
 
         $pushed[$name] = true;
-        $scope->push(new \Yay\Ast("·var", $token));
+        $scope->push(new \Yay\Ast("var", $token));
         $bound = true;
     }
 
     if ($bound) {
       $ast->append($scope);
     } else {
-      $append = new \Yay\Ast("·simple");
+      $append = new \Yay\Ast("simple");
       $append->push(new \Yay\Ast());
 
       $ast->append($append);
     }
 
     if (!$yields) {
-        $append = new \Yay\Ast("·yields");
+        $append = new \Yay\Ast("yields");
         $append->push(new \Yay\Ast());
 
         $ast->append($append);
     }
-} >> {··trim(
-    ·scope ?·{
-        [·scope ···(, ) { ·var = ·var ?? null}, "fn" => function (·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignmentVal } }) use (·scope ···(, ) { &·var }): \Amp\Promise {
-            return ··trim(
-                ·amp1 ?· { \Amp\resolve }
-                ·amp2 ?· { \Amp\call }
-                (function () use (·scope ···(, ) { &·var }) {
-                    ·body ·yields ?·{yield;}
+} >> {$$(trim(
+    $(scope ? {
+        [$(scope ... (, ) { $(var) = $(var) ?? null}), "fn" => function ($(args ... (, ) {$(arg ... { $(argType) $(argName) $(argAssignmentEq) $(argAssignmentVal) })})) use ($(scope ... (, ) { &$(var) })): \Amp\Promise {
+            return $$(trim(
+                $(amp1 ? { \Amp\resolve })
+                $(amp2 ? { \Amp\call })
+                (function () use ($(scope ... (, ) { &$(var) })) {
+                    $(body) $(yields ? {yield;})
                 });
-            )
+            ))
         }]["fn"]
-    }
+    })
 
-    ·simple ?·{
-        function (·args ···(, ) { ·arg ··· { ·argType ·argName ·argAssignmentEq ·argAssignVal } }): \Amp\Promise {
-            return ··trim(
-                ·amp1 ?· { \Amp\resolve }
-                ·amp2 ?· { \Amp\call }
+    $(simple ? {
+        function ($(args ... (, ) {$(arg ... { $(argType) $(argName) $(argAssignmentEq) $(argAssignVal) })})): \Amp\Promise {
+            return $$(trim(
+                $(amp1 ? { \Amp\resolve })
+                $(amp2 ? { \Amp\call })
                 (function () {
-                    ·body ·yields ?·{yield;}
+                    $(body) $(yields ? {yield;})
                 });
-            )
+            ))
         }
-    }
-)}
+    })
+))}
