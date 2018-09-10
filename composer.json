@@ -2,6 +2,11 @@
     "type": "pre-macro",
     "name": "pre/async",
     "license": "MIT",
+    "autoload": {
+        "files": [
+            "source/functions.php"
+        ]
+    },
     "require": {
         "pre/plugin": "*"
     },

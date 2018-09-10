@@ -1,13 +1,17 @@
 interface AsyncInterface
 {
-    async public function run();
+    async public static function runWithString(string $args = ""): Boolean;
+    async public static function runWithArgsClass(Args $args = new Args("")): Boolean;
+    async public static function runWithArgsFunction($args = args(""));
 }
 
 ~~~
 
 interface AsyncInterface
 {
-    public function run(): \Amp\Promise;
+    public static function runWithString(string $args = ""): \Amp\Promise;
+    public static function runWithArgsClass(Args $args = null): \Amp\Promise;
+    public static function runWithArgsFunction($args = null): \Amp\Promise;
 }
 
 ---
@@ -68,7 +72,7 @@ $second = async function() {
     yield $thing;
 };
 
-$third = async () => {
+$third = async () ~> {
     yield $thing;
 };
 
