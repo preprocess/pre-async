@@ -84,15 +84,21 @@ $first = function (): \Amp\Promise {
     });
 };
 
-$second = [$thing = $thing ?? null, "fn" => function () use (&$thing): \Amp\Promise {
-    return \Amp\call(function () use (&$thing) {
-        $this->something();
-        yield $thing;
-    });
-}]["fn"];
+$second = [
+    ($thing = $thing ?? null),
+    "fn" => function () use (&$thing): \Amp\Promise {
+        return \Amp\call(function () use (&$thing) {
+            $this->something();
+            yield $thing;
+        });
+    }
+]["fn"];
 
-$third = [$thing = $thing ?? null, "fn" => function () use (&$thing): \Amp\Promise {
-    return \Amp\call(function () use (&$thing) {
-        yield $thing;
-    });
-}]["fn"];
+$third = [
+    ($thing = $thing ?? null),
+    "fn" => function () use (&$thing): \Amp\Promise {
+        return \Amp\call(function () use (&$thing) {
+            yield $thing;
+        });
+    }
+]["fn"];
