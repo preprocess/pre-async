@@ -41,7 +41,7 @@ $(macro :recursion) {
         _() as amp2
     ))
 } >> function($ast) {
-    return \Pre\Async\closure($ast);
+    return \Pre\Async\compile($ast, $isClosure = false);
 } >> {$$(trim(
     $(scope ? {
         $$(functionModifiers($(functionModifiers))) function $(function)($(functionArguments ... (, ) { $$(functionArgument($(functionArgument))) })): \Amp\Promise
@@ -88,7 +88,7 @@ $(macro :recursion) {
         _() as amp2
     ))
 } >> function($ast) {
-    return \Pre\Async\closure($ast);
+    return \Pre\Async\compile($ast, $isClosure = true);
 } >> {$$(trim(
     $(scope ? {
         [$(scope ... (, ) { $(var) = $(var) ?? null}), "fn" => function ($(functionArguments ... (, ) { $$(functionArgument($(functionArgument))) })) use ($(scope ... (, ) { &$(var) })): \Amp\Promise {

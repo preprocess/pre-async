@@ -4,7 +4,7 @@ namespace Pre\Async;
 
 use Yay\Ast;
 
-function closure($ast) {
+function compile($ast, $isClosure = true) {
     if (function_exists("\\Amp\\resolve")) {
         $append = new Ast("amp1");
         $append->push(new Ast());
@@ -40,7 +40,7 @@ function closure($ast) {
             continue;
         }
 
-        if (isset($defined[$name]) || isset($pushed[$name])) {
+        if (($isClosure && isset($defined[$name])) || isset($pushed[$name])) {
             continue;
         }
 

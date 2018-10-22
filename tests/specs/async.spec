@@ -23,9 +23,9 @@ class AsyncClass
         await \Amp\File\get("path/to/file");
     }
 
-    async public function second()
+    async public function second($terminator = "!")
     {
-        return "boo!";
+        return "boo{$terminator}";
     }
 
     async public static function complex(): string
@@ -45,10 +45,10 @@ class AsyncClass
         });
     }
 
-    public function second(): \Amp\Promise
+    public function second($terminator = "!"): \Amp\Promise
     {
-        return \Amp\call(function () {
-            return "boo!";
+        return \Amp\call(function () use (&$terminator) {
+            return "boo{$terminator}";
             yield;
         });
     }
